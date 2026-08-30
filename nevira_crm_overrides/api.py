@@ -114,4 +114,31 @@ def get_single_customer(customer_id):
     """
     Return a single customer
     """
-    
+    if not customer_id:
+        frappe.throw(_("Customer ID is required"))
+
+    if not frappe.has_permission("Customer","read"):
+        frappe.throw(
+            _("You do not have sufficient permissions to view the customer"),
+            frappe.PermissionError()
+        )
+
+    result = frappe.db.sql(""" 
+                SELECT
+                    cu.name AS customer_id,
+                    cu.customer_name,
+                    cu.customer_group,
+                    cu.territory,
+                    cu.customer_type,
+                    cu.payment_terms,
+                    cu.mobile_no,
+                    cu.email_id
+                FROM `tabCustomer` AS cu 
+                WHERE cu.name = %s""",(customer_id), as_dict=True)
+
+    customer = result[0]
+
+    return {
+        "customer": customer
+    }
+
