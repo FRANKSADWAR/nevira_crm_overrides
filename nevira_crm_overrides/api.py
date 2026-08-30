@@ -108,3 +108,10 @@ def get_customer_list(search=None, page = 1, page_length=40):
         "total_count": total_count
     }
 
+
+frappe.whitelist(allow_guest=False)
+def get_single_customer(customer_id):
+    """
+    Return a single customer
+    """
+    
