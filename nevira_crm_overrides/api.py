@@ -63,4 +63,6 @@ def test_get_customer_list():
 
     
 
-    
+if __name__ == "__main__":
+    data = test_get_customer_list()
+    print(data)
