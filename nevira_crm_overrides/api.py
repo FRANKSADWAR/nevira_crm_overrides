@@ -34,17 +34,24 @@ def update_deals_email_mobile(doc):
             )
 
 def test_get_customer_list():
+    load_dotenv(".env")
 
-    BASE_URL = "https://tst.neviraminerals.com"
+    BASE_URL = "https://tst.neviraminerals.com/"
 
-    API_KEY = os.getenv("API_KEY")
-    API_SECRET = os.getenv("API_SECRET")
+    api_key = os.getenv("API_KEY")
+    api_secret = os.getenv("API_SECRET")
 
-    print(API_KEY)
-    print(API_SECRET)
+    if not api_key or not api_secret:
+        frappe.log_error(
+            title="Missing API credentials",
+            message ="API Key or API Secret not found in config file"
+        )
+        raise ValueError("API credentials not found!")
+    
     headers = {
-        "Authorization":f"token {API_KEY}:{API_SECRET}",
-        "Content":"application/json"
+        "Authorization":f"token {api_key}:{api_secret}",
+        "Content-Type":"application/json",
+        "Accept":"application/json"
     }
 
     params = {
@@ -52,14 +59,26 @@ def test_get_customer_list():
         "page_length": 40
     } 
 
-    URL = f"{BASE_URL}/api/method/neviraflow.api.get_customer_list"
+    URL = f"{BASE_URL}api/method/neviraflow.api.get_customer_list"
+    print(URL)
 
     try:
         response = requests.get(URL,headers=headers, params = params)
+        response.raise_for_status()
+
+        # Parse JSON  response
         data = response.json()
+
+        # log success fetching of data
+        frappe.logger().info(f"Successfully fetched customer data count={len(data["message"])}")
         return data
-    except Exception as e:
-        print("Unbale to fetch data:",e)
+    except requests.exceptions.Timeout:
+        error_message = "Request timeout"
+        frappe.log_error(title="API HTTP Error", message=f"{error_message}")
+        raise requests.exceptions.RequestException(error_message)
+
+    except requests.exceptions.RequestException as e:
+        error_message = f"Request failed: str(e)"
 
     
 
