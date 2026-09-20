@@ -74,11 +74,18 @@ def test_get_customer_list():
         return data
     except requests.exceptions.Timeout:
         error_message = "Request timeout"
-        frappe.log_error(title="API HTTP Error", message=f"{error_message}")
+        frappe.log_error(title="API Timeout Error", message=error_message)
         raise requests.exceptions.RequestException(error_message)
 
     except requests.exceptions.RequestException as e:
         error_message = f"Request failed: str(e)"
+        frappe.log_error(title="API Request failed", message=error_message)
+        raise
+    except requests.exceptions.HTTPError as e:
+        error_message = f"HTTP error occured:{e.response.status_code} - {e.response.text}"
+        frappe.log_error(title="API HTTP Error", message=error_message)
+        raise
+
 
     
 
