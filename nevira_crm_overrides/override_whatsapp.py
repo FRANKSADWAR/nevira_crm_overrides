@@ -7,9 +7,6 @@ from frappe_whatsapp.utils import format_number
 
 class CustomWhatsAppMessage(WhatsAppMessage):
 
-    def __str__(self):
-        return super().__str__()
-
     def before_save(self):
         self.set_to_from_crm_lead() 
 
@@ -20,8 +17,9 @@ class CustomWhatsAppMessage(WhatsAppMessage):
             return
 
         mobile_no = frappe.db.get_value("CRM Lead", self.custom_crm_lead, "mobile_no")
+        frappe.log(f"Mobile number is {mobile_no}")
         if mobile_no:
-            self.to = format_number(mobile_no)
+            self.to = mobile_no
         
         else:
             frappe.throw(
