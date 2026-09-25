@@ -9,7 +9,6 @@ import os
 import requests
 import pandas as pd
 import logging
-from sqlalchemy.engine import create_engine
 
 logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT = 10
